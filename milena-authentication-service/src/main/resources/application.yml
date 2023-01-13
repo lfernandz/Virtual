@@ -1,0 +1,117 @@
+server:
+  port: 9200
+
+main:
+  banner-mode: console
+  allow-bean-definition-overriding: true
+
+spring:
+  config:
+    activate:
+      on-profile:
+      - dev
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/MilenaCloud
+          jwk-set-uri: http://localhost:8080/realms/MilenaCloud/protocol/openid-connect/certs
+
+  rabbitmq:
+    host: 129.151.226.176
+    port: 5672
+    username: default_user_xNhLV7NxWV6Z3e3aBex
+    password: A6d9q_VCBMacaa1heD4Z0O8Tws6QfhR_
+    virtual-host: /
+    exchanges:
+      internal: internal.exchange
+    queues:
+      notification: user
+    routing-keys:
+      internal-notification: internal.notification.routing-key
+
+keycloak:
+    auth-server-url: http://localhost:8080
+    ssl-required: none #use external in production
+    realm: MilenaCloud
+    resource: login-app
+    bearer-only: true
+    confidential-port: 0
+    use-resource-role-mappings: false
+    principal-attribute: preferred_username
+    cors: true
+---
+
+spring:
+  config:
+    activate:
+      on-profile:
+      - qa
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/MilenaCloud
+          jwk-set-uri: http://localhost:8080/realms/MilenaCloud/protocol/openid-connect/certs
+
+  rabbitmq:
+    host: 129.151.226.176
+    port: 5672
+    username: default_user_xNhLV7NxWV6Z3e3aBex
+    password: A6d9q_VCBMacaa1heD4Z0O8Tws6QfhR_
+    virtual-host: /
+    exchanges:
+      internal: internal.exchange
+    queues:
+      notification: user
+    routing-keys:
+      internal-notification: internal.notification.routing-key
+
+keycloak:
+  auth-server-url: http://localhost:8080
+  ssl-required: none #use external in production
+  realm: MilenaCloud
+  resource: login-app
+  bearer-only: true
+  confidential-port: 0
+  use-resource-role-mappings: false
+  principal-attribute: preferred_username
+  cors: true
+
+---
+
+
+spring:
+  config:
+    activate:
+      on-profile:
+      - prod
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_SERVER}/realms/MilenaCloud
+          jwk-set-uri: ${KEYCLOAK_SERVER}/realms/MilenaCloud/protocol/openid-connect/certs
+
+  rabbitmq:
+    host: ${RABBIT_HOST}
+    port: ${RABBIT_PORT}
+#    ssl:
+#      enabled: ${RABBIT_ENABLE_SSL}
+    username: ${RABBIT_USER}
+    password: ${RABBIT_PASSWD}
+    virtual-host: /
+
+keycloak:
+  auth-server-url: ${KEYCLOAK_SERVER}/auth/
+  ssl-required: external
+  realm: ${KEYCLOAK_REALM}
+  resource: ${KEYCLOAK_CLIENT_ID}
+  bearer-only: true
+  confidential-port: 0
+  use-resource-role-mappings: false
+  principal-attribute: preferred_username
+  cors: true

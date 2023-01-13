@@ -1,0 +1,98 @@
+server:
+  port: 9500
+
+spring:
+  config:
+    activate:
+      on-profile:
+      - dev
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/MilenaCloud
+          jwk-set-uri: http://localhost:8080/realms/MilenaCloud/protocol/openid-connect/certs
+
+  h2:
+    console:
+      enabled: true
+
+  datasource:
+    url: jdbc:h2:mem:milenaDB;MODE=MYSQL
+    driverClassName: org.h2.Driver
+    username: sa
+    initialize: true
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+    generate-ddl: true
+  #
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
+      data-locations: classpath:data.sql,classpath:schema.sql
+
+  rabbitmq:
+    host: 129.151.226.176
+    port: 5672
+    username: default_user_xNhLV7NxWV6Z3e3aBex
+    password: A6d9q_VCBMacaa1heD4Z0O8Tws6QfhR_
+    virtual-host: /
+    exchanges:
+      internal: internal.exchange
+    queues:
+      notification: user
+    routing-keys:
+      internal-notification: internal.notification.routing-key
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile:
+      - qa
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/MilenaCloud
+          jwk-set-uri: http://localhost:8080/realms/MilenaCloud/protocol/openid-connect/certs
+
+  rabbitmq:
+    host: 129.151.226.176
+    port: 5672
+    username: default_user_xNhLV7NxWV6Z3e3aBex
+    password: A6d9q_VCBMacaa1heD4Z0O8Tws6QfhR_
+    virtual-host: /
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile:
+      - prod
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_SERVER}/realms/MilenaCloud
+          jwk-set-uri: ${KEYCLOAK_SERVER}/realms/MilenaCloud/protocol/openid-connect/certs
+
+  rabbitmq:
+    host: ${RABBIT_HOST}
+    port: ${RABBIT_PORT}
+    ssl:
+      enabled: ${RABBIT_ENABLE_SSL}
+    username: ${RABBIT_USER}
+    password: ${RABBIT_PASSWD}
+    virtual-host: /
